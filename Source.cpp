@@ -2,19 +2,23 @@
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 using namespace std;
 using namespace std::chrono;
+
+const int NAMECOLUMNWIDTH = 25, ARRAYSIZECOLUMNWIDTH = 10, COMPARISONSCOLUMNWIDTH = 25, RUNTIMECOLUMNWIDTH = 25; // Column widths for the table
 
 int selectionSort(int numberArray[], int size, double& runTime, int& comparisons);
 void swap(int* a, int* b);
 void generateRandomArray(int* numberArray, int size);
-void printResults(int numberArray[], int size, int comparisons, double runTime, int type);
+void printResults(int size, int comparisons, double runTime, int type);
 void sortSelection(int* numberArray, int arraySize, int sortType);
 void merge(int arr[], int l, int m, int r, int& comparisons);
 void printArray(int numberArray[], int size);
 int insertionSort(int numberArray[], int size, double& runTime, int& comparisons);
 void mergeSort(int numberArray[], int l, int r, int& comparisons);
 void countingSort_R(int numberArray[], int size, double& runTime, int& comparisons);
+void printTableHeader();
 
 void printArray(int numberArray[], int size) {
 	for (int i = 0; i < size; i++) {
@@ -23,32 +27,42 @@ void printArray(int numberArray[], int size) {
 	cout << endl;
 }
 
-void printResults(int numberArray[], int size, int comparisons, double runTime, int type) {
+void printTableHeader() {
+	
+	// Print the table headers with vertical bars
+	cout << '|' << left << setw(NAMECOLUMNWIDTH) << "Sorting Algorithm Name"<< '|' << setw(ARRAYSIZECOLUMNWIDTH) << "Array Size" << '|' << setw(COMPARISONSCOLUMNWIDTH) << "Number of Comparisons"<< '|' << setw(RUNTIMECOLUMNWIDTH) << "Run time (in ms)" << '|' << endl;
 
-	switch (type)
-	{
+	// Print a line separator
+	cout << '|' << string(NAMECOLUMNWIDTH, '-') << '+'<< string(ARRAYSIZECOLUMNWIDTH, '-') << '+'<< string(COMPARISONSCOLUMNWIDTH, '-') << '+'<< string(RUNTIMECOLUMNWIDTH, '-') << '|' << endl;
+}
+
+void printResults(int size, int comparisons, double runTime, int type) {
+	// Column widths
+	int NAMECOLUMNWIDTH = 25, ARRAYSIZECOLUMNWIDTH = 10, COMPARISONSCOLUMNWIDTH = 25, RUNTIMECOLUMNWIDTH = 25;
+
+	string algorithmName;
+
+	switch (type) {
 	case 1:
-		cout << "Selection Sort" << endl;
+		algorithmName = "Selection Sort";
 		break;
 	case 2:
-		cout << "Insertion Sort" << endl;
+		algorithmName = "Insertion Sort";
 		break;
 	case 3:
-		cout << "Merge Sort" << endl;
+		algorithmName = "Merge Sort";
 		break;
 	case 4:
-		cout << "Quick Sort" << endl;
+		algorithmName = "Quick Sort";
 		break;
 	case 5:
-		cout << "Counting Sort" << endl;
+		algorithmName = "Counting Sort";
 		break;
 	default:
 		break;
 	}
 
-	printArray(numberArray, size);
-	cout << "Number of comparisons: " << comparisons << endl;
-	cout << "Time taken: " << runTime << " milliseconds" << endl;
+	cout << '|' << left << setw(NAMECOLUMNWIDTH) << algorithmName << '|' << setw(ARRAYSIZECOLUMNWIDTH) << size << '|' << setw(COMPARISONSCOLUMNWIDTH) << comparisons << '|' << setw(RUNTIMECOLUMNWIDTH-3) <<runTime << " ms" << '|' << endl;
 
 }
 
@@ -271,18 +285,18 @@ void sortSelection(int* numberArray, int arraySize, int sortType) {
 
 	copy(numberArray, numberArray + arraySize, copyArray);
 
-	cout << "Array before sorting: ";
-	printArray(numberArray, arraySize);
+	/*cout << "Array before sorting: ";
+	printArray(numberArray, arraySize);*/
 
 	switch (sortType) {
 	case 1:
 		selectionSort(copyArray, arraySize, runTime, comparisons = 0);
-		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		printResults(arraySize, comparisons, runTime, sortType);
 		cout << endl;
 		break;
 	case 2:
 		insertionSort(copyArray, arraySize, runTime, comparisons = 0);
-		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		printResults(arraySize, comparisons, runTime, sortType);
 		cout << endl;
 		break;
 	case 3: { //to ensure that the initialization of start and end variables occurs within the scope of each case that requires them. One way to achieve this is by wrapping the code for each case inside braces {}.
@@ -290,7 +304,7 @@ void sortSelection(int* numberArray, int arraySize, int sortType) {
 		mergeSort(copyArray, 0, arraySize - 1, comparisons = 0);
 		auto end = high_resolution_clock::now();
 		runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
-		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		printResults( arraySize, comparisons, runTime, sortType);
 		cout << endl;
 		break;
 	}
@@ -300,13 +314,13 @@ void sortSelection(int* numberArray, int arraySize, int sortType) {
 		quickSort(copyArray, 0, arraySize - 1, comparisons = 0);
 		auto end = high_resolution_clock::now();
 		runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
-		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		printResults( arraySize, comparisons, runTime, sortType);
 		cout << endl;
 		break;
 	}
 	case 5: {
 		countingSort_R(copyArray, arraySize, runTime, comparisons = 0);
-		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		printResults( arraySize, comparisons, runTime, sortType);
 		cout << endl;
 		break;
 	}
@@ -329,11 +343,12 @@ int main() {
 	int* numberArray = new int[arraySize];
 	generateRandomArray(numberArray, arraySize);
 
+	printTableHeader();
 
-	/*sortSelection(numberArray, arraySize, 1);
+	sortSelection(numberArray, arraySize, 1);
 	sortSelection(numberArray, arraySize, 2);
 	sortSelection(numberArray, arraySize, 3);
-	sortSelection(numberArray, arraySize, 4);*/
+	sortSelection(numberArray, arraySize, 4);
 	sortSelection(numberArray, arraySize, 5);
 
 	delete[] numberArray;
