@@ -4,10 +4,11 @@
 using namespace std;
 using namespace std::chrono;
 
-int selectionSort(int numberArray[], int size, double& duration,int& comparisons);
+int selectionSort(int numberArray[], int size, double& runTime,int& comparisons);
 void swap(int* a, int* b);
 void generateRandomArray(int* numberArray, int size);
-void printResults(int numberArray[], int size, int comparisons, double duration, int type);
+void printResults(int numberArray[], int size, int comparisons, double runTime, int type);
+
 
 void printArray(int numberArray[], int size) {
 	for (int i = 0; i < size; i++) {
@@ -16,7 +17,7 @@ void printArray(int numberArray[], int size) {
 	cout << endl;
 }
 
-void printResults(int numberArray[], int size, int comparisons, double duration,int type) {
+void printResults(int numberArray[], int size, int comparisons, double runTime,int type) {
 
 	switch (type)
 	{
@@ -24,13 +25,13 @@ void printResults(int numberArray[], int size, int comparisons, double duration,
 		cout << "Selection Sort" << endl;
 		printArray(numberArray, size);
 		cout << "Number of comparisons: " << comparisons << endl;
-		cout << "Time taken: " << duration << " milliseconds" << endl;
+		cout << "Time taken: " << runTime << " milliseconds" << endl;
 		break;
 	case 2:
 		cout << "Insertion Sort" << endl;
 		printArray(numberArray, size);
 		cout << "Number of comparisons: " << comparisons << endl;
-		cout << "Time taken: " << duration << " milliseconds" << endl;
+		cout << "Time taken: " << runTime << " milliseconds" << endl;
 		break;
 	default:
 		break;
@@ -51,7 +52,7 @@ void generateRandomArray(int* numberArray, int size) {
 }
 
 
-int selectionSort(int numberArray[], int size, double& duration,int& comparisons) {
+int selectionSort(int numberArray[], int size, double& runTime,int& comparisons) {
 
 	auto start = high_resolution_clock::now();
 
@@ -64,14 +65,12 @@ int selectionSort(int numberArray[], int size, double& duration,int& comparisons
 
 	auto end = high_resolution_clock::now();
 
-	duration = duration_cast<chrono::duration<double, milli>>(end - start).count();
+	runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
 
 	return comparisons;
 }
 
-int insertionSort(int numberArray[], int size, double& duration,int& comparisons) {
-
-	printArray(numberArray, size);
+int insertionSort(int numberArray[], int size, double& runTime,int& comparisons) {
 
 	auto start = high_resolution_clock::now();
 
@@ -88,9 +87,41 @@ int insertionSort(int numberArray[], int size, double& duration,int& comparisons
 
 	auto end = high_resolution_clock::now();
 
-	duration = duration_cast<chrono::duration<double, milli>>(end - start).count();
+	runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
 
 	return comparisons;
+}
+
+void displayMenu() {
+    cout << "1. Test an individual sorting algorithm\n";
+    cout << "2. Test multiple sorting algorithms\n";
+    cout << "3. Exit\n";
+    cout << "Choose an option: ";
+}
+
+void displaySubMenu() {
+	cout << "1. Selection Sort\n";
+	cout << "2. Insertion Sort\n";
+	cout << "3. Merge Sort\n";
+	cout << "4. Quick Sort\n";
+	cout << "5. Counting Sort\n";
+	cout << "Choose an algorithm: ";
+}
+
+void sortSelection(int* numberArray, int arraySize, int(*sortFunction)(int*, int, double&, int&), int sortType) {
+	double runTime = 0;
+	int comparisons = 0;
+
+	int* copyArray = new int[arraySize];
+
+	copy(numberArray, numberArray + arraySize, copyArray);
+
+	cout << "Array before sorting: ";
+	printArray(numberArray, arraySize);
+	printResults(copyArray, arraySize, sortFunction(copyArray, arraySize, runTime, comparisons), runTime, sortType);
+	cout << endl;
+
+	delete[] copyArray;
 }
 
 int main() {
@@ -103,20 +134,11 @@ int main() {
 	int* numberArray = new int[arraySize];
 	generateRandomArray(numberArray, arraySize);
 
-	double duration;
-	int comparisons;
+	
+	sortSelection(numberArray, arraySize, selectionSort, 1);
+	sortSelection(numberArray, arraySize, insertionSort, 2);
 
-	int* copyArray = new int[arraySize];
-	copy(numberArray, numberArray + arraySize, copyArray);
-
-	printArray(numberArray, arraySize);
-	comparisons = selectionSort(copyArray, arraySize, duration = 0, comparisons = 0);
-	printResults(copyArray, arraySize, comparisons, duration,1);
-
-	printArray(numberArray, arraySize);
-	comparisons = insertionSort(numberArray, arraySize, duration=0, comparisons=0);
-	printResults(numberArray, arraySize, comparisons, duration,2);
-
+	delete[] numberArray;
 	
 	return 0;
 }
