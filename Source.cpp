@@ -14,6 +14,7 @@ void merge(int arr[], int l, int m, int r, int& comparisons);
 void printArray(int numberArray[], int size);
 int insertionSort(int numberArray[], int size, double& runTime, int& comparisons);
 void mergeSort(int numberArray[], int l, int r, int& comparisons);
+void countingSort_R(int numberArray[], int size, double& runTime, int& comparisons);
 
 void printArray(int numberArray[], int size) {
 	for (int i = 0; i < size; i++) {
@@ -35,11 +36,17 @@ void printResults(int numberArray[], int size, int comparisons, double runTime, 
 	case 3:
 		cout << "Merge Sort" << endl;
 		break;
+	case 4:
+		cout << "Quick Sort" << endl;
+		break;
+	case 5:
+		cout << "Counting Sort" << endl;
+		break;
 	default:
 		break;
 	}
 
-	/*printArray(numberArray, size);*/
+	printArray(numberArray, size);
 	cout << "Number of comparisons: " << comparisons << endl;
 	cout << "Time taken: " << runTime << " milliseconds" << endl;
 
@@ -100,7 +107,7 @@ int insertionSort(int numberArray[], int size, double& runTime, int& comparisons
 	return comparisons;
 }
 
-void merge(int arr[], int l, int m, int r, int& comparisons) {
+void merge(int numberArray[], int l, int m, int r, int& comparisons) {
 	int i, j;
 	int n1 = m - l + 1;
 	int n2 = r - m;
@@ -109,12 +116,12 @@ void merge(int arr[], int l, int m, int r, int& comparisons) {
 	int* R = new int[n2];  // Dynamically allocate memory for R
 
 	for (i = 0; i < n1; i++) {
-		L[i] = arr[l + i];
+		L[i] = numberArray[l + i];
 		comparisons++;
 	}
 
 	for (j = 0; j < n2; j++) {
-		R[j] = arr[m + 1 + j];
+		R[j] = numberArray[m + 1 + j];
 		comparisons++;
 	}
 
@@ -124,25 +131,25 @@ void merge(int arr[], int l, int m, int r, int& comparisons) {
 	while (i < n1 && j < n2) {
 		comparisons++;
 		if (L[i] <= R[j]) {
-			arr[l] = L[i];
+			numberArray[l] = L[i];
 			i++;
 		}
 		else {
-			arr[l] = R[j];
+			numberArray[l] = R[j];
 			j++;
 		}
 		l++;
 	}
 
 	while (i < n1) {
-		arr[l] = L[i];
+		numberArray[l] = L[i];
 		i++;
 		l++;
 		comparisons++;
 	}
 
 	while (j < n2) {
-		arr[l] = R[j];
+		numberArray[l] = R[j];
 		j++;
 		l++;
 		comparisons++;
@@ -165,6 +172,87 @@ void mergeSort(int numberArray[], int l, int r, int& comparisons) {
 
 }
 
+int partition(int numberArray[], int low, int high, int& comparisons) {
+
+	int pivot = numberArray[high];
+
+	int i = (low - 1);
+
+	for (int j = low; j < high; j++) {
+		comparisons++;
+		if (numberArray[j] <= pivot) {
+
+			i++;
+
+			swap(&numberArray[i], &numberArray[j]);
+		}
+	}
+
+	comparisons++;
+	swap(&numberArray[i + 1], &numberArray[high]);
+
+	return (i + 1);
+}
+
+void quickSort(int numberArray[], int low, int high, int& comparisons) {
+	if (low < high) {
+		comparisons++;
+		int pivot = partition(numberArray, low, high,comparisons);
+
+		quickSort(numberArray, low, pivot - 1, comparisons);
+
+		quickSort(numberArray, pivot + 1, high,comparisons);
+	}
+}
+
+void countingSort_R(int numberArray[], int size, double& runTime, int& comparisons) { // counting sorting for an array with repetitive elements
+	auto start = high_resolution_clock::now();
+
+	int* index_array = new int[size]();  // Initialize with zero
+	int* sorted_array = new int[size];
+
+	// Count elements less than the current element
+	for (int i = 0; i < size; i++) {
+		comparisons++;  // Counting the comparison of the loop condition
+		int count = 0;
+		for (int y = 0; y < size; y++) {
+			comparisons++;  // Counting the comparison of the loop condition
+			if (numberArray[y] < numberArray[i]) {
+				count++;
+			}
+		}
+		index_array[i] = count;
+	}
+
+	// Handle duplicates
+	for (int i = 0; i < size; i++) {
+		comparisons++;  // Counting the comparison of the loop condition
+		for (int y = 0; y < i; y++) {
+			comparisons++;  // Counting the comparison of the loop condition
+			if (numberArray[y] == numberArray[i]) {
+				index_array[i]++;
+			}
+		}
+	}
+
+	// Build the sorted array
+	for (int i = 0; i < size; i++) {
+		comparisons++;  // Counting the comparison of the loop condition
+		sorted_array[index_array[i]] = numberArray[i];
+	}
+
+	// Copy sorted array back to original array
+	for (int i = 0; i < size; i++) {
+		comparisons++;  // Counting the comparison of the loop condition
+		numberArray[i] = sorted_array[i];
+	}
+
+	auto end = high_resolution_clock::now();
+	runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
+
+	delete[] index_array;
+	delete[] sorted_array;
+}
 
 void displaySubMenu() {
 	cout << "1. Selection Sort\n";
@@ -183,8 +271,8 @@ void sortSelection(int* numberArray, int arraySize, int sortType) {
 
 	copy(numberArray, numberArray + arraySize, copyArray);
 
-	/*cout << "Array before sorting: ";
-	printArray(numberArray, arraySize);*/
+	cout << "Array before sorting: ";
+	printArray(numberArray, arraySize);
 
 	switch (sortType) {
 	case 1:
@@ -206,13 +294,29 @@ void sortSelection(int* numberArray, int arraySize, int sortType) {
 		cout << endl;
 		break;
 	}
+	case 4:
+	{
+		auto start = high_resolution_clock::now();
+		quickSort(copyArray, 0, arraySize - 1, comparisons = 0);
+		auto end = high_resolution_clock::now();
+		runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
+		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		cout << endl;
+		break;
+	}
+	case 5: {
+		countingSort_R(copyArray, arraySize, runTime, comparisons = 0);
+		printResults(copyArray, arraySize, comparisons, runTime, sortType);
+		cout << endl;
+		break;
+	}
 	default:
 		cout << "Invalid sort type selected!" << endl;
 		break;
-	
+
 	}
 
-	delete[] copyArray;
+		  delete[] copyArray;
 }
 
 int main() {
@@ -226,9 +330,11 @@ int main() {
 	generateRandomArray(numberArray, arraySize);
 
 
-	sortSelection(numberArray, arraySize, 1);
+	/*sortSelection(numberArray, arraySize, 1);
 	sortSelection(numberArray, arraySize, 2);
 	sortSelection(numberArray, arraySize, 3);
+	sortSelection(numberArray, arraySize, 4);*/
+	sortSelection(numberArray, arraySize, 5);
 
 	delete[] numberArray;
 
