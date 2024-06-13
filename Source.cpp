@@ -1,13 +1,14 @@
 #include <iostream>
-#include <chrono>
+#include <chrono> // For time measurement
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
+
 using namespace std;
-using namespace std::chrono;
+using namespace std::chrono; // For time measurement
 
 const int NAMECOLUMNWIDTH = 25, ARRAYSIZECOLUMNWIDTH = 10, COMPARISONSCOLUMNWIDTH = 25, RUNTIMECOLUMNWIDTH = 25; // Column widths for the table
-const string SORTINGNAMES[] = { "Selection Sort","Insertion Sort","Merge Sort","Quick Sort","Counting Sort" };
+const string SORTINGNAMES[] = { "Selection Sort","Insertion Sort","Merge Sort","Quick Sort","Counting Sort" }; // Sorting algorithm names
 
 void swap(int* a, int* b);
 void generateRandomArray(int* numberArray, int size);
@@ -26,55 +27,55 @@ void displayMainMenu();
 bool inputValidator(char input, int lb, int ub);
 bool arrayInputSizeValidator(int input);
 
-void printTableHeader() {
+void printTableHeader() { // funtion for the printing table header
 	
 	cout << endl;
-
-	// Print the table headers with vertical bars
+	// table headers
 	cout << '|' << left << setw(NAMECOLUMNWIDTH) << "Sorting Algorithm Name"<< '|' << setw(ARRAYSIZECOLUMNWIDTH) << "Array Size" << '|' << setw(COMPARISONSCOLUMNWIDTH) << "Number of Comparisons"<< '|' << setw(RUNTIMECOLUMNWIDTH) << "Run time (in ms)" << '|' << endl;
 
-	// Print a line separator
+	// to print the line seperating the table header from the data table
 	cout << '|' << string(NAMECOLUMNWIDTH, '-') << '+'<< string(ARRAYSIZECOLUMNWIDTH, '-') << '+'<< string(COMPARISONSCOLUMNWIDTH, '-') << '+'<< string(RUNTIMECOLUMNWIDTH, '-') << '|' << endl;
 }
 
-void printResults(int size, long long comparisons, double runTime, int type) {
+void printResults(int size, long long comparisons, double runTime, int type) { // function for printing the results in the table
 
 	cout << '|' << left << setw(NAMECOLUMNWIDTH) << SORTINGNAMES[type - 1] << '|' << setw(ARRAYSIZECOLUMNWIDTH) << size << '|' << setw(COMPARISONSCOLUMNWIDTH) << comparisons << '|' << setw(RUNTIMECOLUMNWIDTH - 3) << runTime << " ms" << '|' << endl;
-
+	// print the results seperated by | with a fixed column width
 }
 
-void swap(int* a, int* b) {
+void swap(int* a, int* b) { // function to swap two elements
 	int temp = *a;
 	*a = *b;
 	*b = temp;
 }
 
 void generateRandomArray(int* numberArray, int size) {
-	srand(time(0));
+	srand(time(0)); // Seed for random number generator to avoid getting the same random numbers every time the program is run
 
 	for (int i = 0; i < size; i++) {
-		numberArray[i] = (rand() % (size * 10)) + 1; // Random number between 1 and 10*size
+		numberArray[i] = (rand() % (size * 10)) + 1; // generate random number between 1 and 10*size and add to the array
 	}
 }
 
-void selectionSort(int numberArray[], int size, double& runTime, long long& comparisons) {
+void selectionSort(int numberArray[], int size, double& runTime, long long& comparisons) { // function for selection sort
 
-	auto start = high_resolution_clock::now();
+	auto start = high_resolution_clock::now(); // start the clock 
 
 	for (int i = 0; i < size - 1; i++) {
 		for (int y = i + 1; y < size; y++) {
-			comparisons++;
+			comparisons++; // count the number of steps following the sorting process
 			if (numberArray[i] > numberArray[y]) swap(numberArray[i], numberArray[y]);
 		}
 	}
 
-	auto end = high_resolution_clock::now();
+	auto end = high_resolution_clock::now(); // end the clock
 
-	runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
+	runTime = duration_cast<chrono::duration<double, milli>>(end - start).count(); // calculate the runtime by subtracting the start time from the end time and convert it to milliseconds
+	
 
 }
 
-void insertionSort(int numberArray[], int size, double& runTime, long long& comparisons) {
+void insertionSort(int numberArray[], int size, double& runTime, long long& comparisons) { // function for insertion sort
 
 	auto start = high_resolution_clock::now();
 
@@ -95,13 +96,13 @@ void insertionSort(int numberArray[], int size, double& runTime, long long& comp
 
 }
 
-void merge(int numberArray[], int l, int m, int r, long long& comparisons) {
+void merge(int numberArray[], int l, int m, int r, long long& comparisons) { // function for merging two arrays
 	int i, j;
 	int n1 = m - l + 1;
 	int n2 = r - m;
 
-	int* L = new int[n1];  // Dynamically allocate memory for L
-	int* R = new int[n2];  // Dynamically allocate memory for R
+	int* L = new int[n1];  // dynamically allocate memory for L
+	int* R = new int[n2];  // dynamically allocate memory for R
 
 	for (i = 0; i < n1; i++) {
 		L[i] = numberArray[l + i];
@@ -143,11 +144,11 @@ void merge(int numberArray[], int l, int m, int r, long long& comparisons) {
 		comparisons++;
 	}
 
-	delete[] L;  // Deallocate memory for L
-	delete[] R;  // Deallocate memory for R
+	delete[] L;  
+	delete[] R;  
 }
 
-void mergeSort(int numberArray[], int l, int r, long long& comparisons) {
+void mergeSort(int numberArray[], int l, int r, long long& comparisons) { // function for merge sort
 	if (l < r) {
 		comparisons++;
 		int m = l + (r - l) / 2;
@@ -160,7 +161,7 @@ void mergeSort(int numberArray[], int l, int r, long long& comparisons) {
 
 }
 
-int partition(int numberArray[], int low, int high, long long& comparisons) {
+int partition(int numberArray[], int low, int high, long long& comparisons) { // function for partitioning the array
 
 	int pivot = numberArray[high];
 
@@ -182,7 +183,7 @@ int partition(int numberArray[], int low, int high, long long& comparisons) {
 	return (i + 1);
 }
 
-void quickSort(int numberArray[], int low, int high, long long& comparisons) {
+void quickSort(int numberArray[], int low, int high, long long& comparisons) { // function for quick sort
 	if (low < high) {
 		comparisons++;
 		int pivot = partition(numberArray, low, high,comparisons);
@@ -242,27 +243,29 @@ void countingSort_R(int numberArray[], int size, double& runTime, long long& com
 	delete[] sorted_array;
 }
 
-void sortSelection(int* numberArray, int arraySize, int sortType) {
-	double runTime = 0;
-	long long comparisons = 0;
+void sortSelection(int* numberArray, int arraySize, int sortType) { // function to select the sorting algorithm based on the user's choice
+	double runTime = 0; // variable to store the runtime of the sorting process
+	long long comparisons = 0; // variable to store the number of steps in the sorting process
 
-	int* copyArray = new int[arraySize];
+	int* copyArray = new int[arraySize]; // array to store the copy of the original array
 
-	copy(numberArray, numberArray + arraySize, copyArray);
+	copy(numberArray, numberArray + arraySize, copyArray); // copy the original number array to the copy array
 
-	switch (sortType) {
+	switch (sortType) { 
 	case 1:
-		selectionSort(copyArray, arraySize, runTime, comparisons = 0);
-		printResults(arraySize, comparisons, runTime, sortType);
+		selectionSort(copyArray, arraySize, runTime, comparisons = 0); // call the selection sort function
+		printResults(arraySize, comparisons, runTime, sortType); // print the results in the table
 		break;
 	case 2:
-		insertionSort(copyArray, arraySize, runTime, comparisons = 0);
+		insertionSort(copyArray, arraySize, runTime, comparisons = 0); // call the insertion sort function
 		printResults(arraySize, comparisons, runTime, sortType);
 		break;
-	case 3: { //to ensure that the initialization of start and end variables occurs within the scope of each case that requires them. One way to achieve this is by wrapping the code for each case inside braces {}.
+	case 3: 
+	{ // {} to ensure that the initialization of start and end variables occurs within the scop
 		auto start = high_resolution_clock::now();
-		mergeSort(copyArray, 0, arraySize - 1, comparisons = 0);
+		mergeSort(copyArray, 0, arraySize - 1, comparisons = 0); // call the merge sort function
 		auto end = high_resolution_clock::now();
+
 		runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
 		printResults( arraySize, comparisons, runTime, sortType);
 		break;
@@ -270,26 +273,26 @@ void sortSelection(int* numberArray, int arraySize, int sortType) {
 	case 4:
 	{
 		auto start = high_resolution_clock::now();
-		quickSort(copyArray, 0, arraySize - 1, comparisons = 0);
+		quickSort(copyArray, 0, arraySize - 1, comparisons = 0); // call the quick sort function
 		auto end = high_resolution_clock::now();
+
 		runTime = duration_cast<chrono::duration<double, milli>>(end - start).count();
 		printResults( arraySize, comparisons, runTime, sortType);
 		break;
 	}
 	case 5: {
-		countingSort_R(copyArray, arraySize, runTime, comparisons = 0);
+		countingSort_R(copyArray, arraySize, runTime, comparisons = 0); // call the counting sort function
 		printResults( arraySize, comparisons, runTime, sortType);
 		break;
 	}
 	default:
 		break;
-
 	}
 
 	delete[] copyArray;
 }
 
-void displaySubMenu() {
+void displaySubMenu() { // function to display the sub menu
 	cout << "\n1. Selection Sort\n";
 	cout << "2. Insertion Sort\n";
 	cout << "3. Merge Sort\n";
@@ -298,24 +301,24 @@ void displaySubMenu() {
 
 }
 
-void displayMainMenu() {
+void displayMainMenu() { // function to display the main menu
 	cout << "\n1. Test an individual sorting algorithm\n";
 	cout << "2. Test multiple sorting algorithms \n";
 	cout << "3. Exit\n";
 }
 
-bool inputValidator(char input, int lb, int ub) {
-	if (cin.fail() || input < lb + '0' || input > ub + '0') {
-		cin.clear();
-		cin.ignore(1000, '\n');
+bool inputValidator(char input, int lb, int ub) { // function to validate the user input for the selecting option in the menues
+	if (cin.fail() || input < lb + '0' || input > ub + '0') { // check if the input is not of assigned type or not within the range
+		cin.clear(); // clear the input buffer
+		cin.ignore(1000, '\n'); // ignore the input
 		cout << "Invalid input. Please enter a valid choice." << endl;
 		return false;
 	}
 	return true;
 }
 
-bool arrayInputSizeValidator(int input) {
-	if (cin.fail() || input <= 0) {
+bool arrayInputSizeValidator(int input) { // function to validate the user input for the array size
+	if (cin.fail() || input <= 0) { // check if the input is not of assigned type or a zero or a negative number
 		cin.clear();
 		cin.ignore(1000, '\n');
 		cout << "Invalid input. Enter a positive integer for the array size." << endl;
@@ -325,25 +328,25 @@ bool arrayInputSizeValidator(int input) {
 }
 
 int main() {
-	int arraySize;
+	int arraySize; // variable to store the size of the array
 
 	while (true) {
-		displayMainMenu();
+		displayMainMenu(); // display the main menu
 
-		char mainMenuChoice;
+		char mainMenuChoice; // variable to store the user's choice in the main menu
 
 		cout << "Enter your choice: ";
 		cin >> mainMenuChoice;
 
-		if (!inputValidator(mainMenuChoice, 1, 3)) continue;
+		if (!inputValidator(mainMenuChoice, 1, 3)) continue; // validate the user's input
 
-		if (mainMenuChoice == '3') break;
+		if (mainMenuChoice == '3') break; // exit the program if the user chooses 3
 
 		while (true) {
 			cout << "Enter the size of the array: ";
 			cin >> arraySize;
 
-			if (!arrayInputSizeValidator(arraySize)) {
+			if (!arrayInputSizeValidator(arraySize)){ // validate the user's input for array size
 				continue;
 			}
 			else {
@@ -351,25 +354,25 @@ int main() {
 			}
 		}
 		
-		switch (mainMenuChoice - '0') { // Convert char to int
+		switch (mainMenuChoice - '0') { // Convert char to int 
 		case 1: {
-			int* numberArray = new int[arraySize];
-			generateRandomArray(numberArray, arraySize);
+			int* numberArray = new int[arraySize]; 
+			generateRandomArray(numberArray, arraySize); // generate random array
 
-			displaySubMenu();
-			char subMenuChoice_;
+			displaySubMenu(); // display the sub menu
+			char subMenuChoice_; 
 			cout << "Enter the sorting type: ";
 			cin >> subMenuChoice_;
 
-			if (!inputValidator(subMenuChoice_, 1, 5)) {
+			if (!inputValidator(subMenuChoice_, 1, 5)) { // validate the user's input for the sorting type
 				delete[] numberArray;
 				break;
 			}
 			
 			int subMenuChoice = subMenuChoice_ - '0'; // Convert char to int
 
-			printTableHeader();
-			sortSelection(numberArray, arraySize, subMenuChoice);
+			printTableHeader(); // print the table header
+			sortSelection(numberArray, arraySize, subMenuChoice); // call the sortSelection function to sort the array based on the user's choice
 
 			delete[] numberArray;
 			break;
@@ -381,8 +384,8 @@ int main() {
 
 			printTableHeader();
 
-			for (int i = 1; i <= 5; i++) {
-				sortSelection(numberArray, arraySize, i);
+			for (int i = 1; i <= 5; i++) { // loop through each soting type
+				sortSelection(numberArray, arraySize, i); 
 			}
 
 			delete[] numberArray;
