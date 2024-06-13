@@ -28,8 +28,11 @@ bool inputValidator(char input, int lb, int ub);
 bool arrayInputSizeValidator(int input);
 
 void printTableHeader() { // funtion for the printing table header
-	
+
 	cout << endl;
+
+	cout << '|' << string(88, '-') << '|' << endl;
+	
 	// table headers
 	cout << '|' << left << setw(NAMECOLUMNWIDTH) << "Sorting Algorithm Name"<< '|' << setw(ARRAYSIZECOLUMNWIDTH) << "Array Size" << '|' << setw(COMPARISONSCOLUMNWIDTH) << "Number of Comparisons"<< '|' << setw(RUNTIMECOLUMNWIDTH) << "Run time (in ms)" << '|' << endl;
 
